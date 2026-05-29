@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'register_page.dart'; 
 import 'forgot_password.dart'; // Menyambungkan ke halaman lupa password
-import '../../../navigation_bar/navigation.dart'; 
+import '../../navigation_bar/navigation.dart'; 
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});

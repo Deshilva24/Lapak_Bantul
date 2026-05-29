@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'auth/login_page.dart'; // Memastikan mengarah ke folder auth kamu
+import '../auth/login_page.dart'; // Memastikan mengarah ke folder auth kamu
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});

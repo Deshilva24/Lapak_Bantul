@@ -15,13 +15,14 @@ class UserModel {
     required this.avatar,
   });
 
-  // Fungsi konversi JSON (Mengurai satu per satu ke variabel lokal)
+  // Fungsi konversi JSON (Sudah dilengkapi pengaman null safety)
   factory UserModel.fromJson(Map<String, dynamic> json) {
-    int idBaru = json['id'];
-    String emailBaru = json['email'].toString();
-    String namaDepan = json['first_name'].toString();
-    String namaBelakang = json['last_name'].toString();
-    String fotoProfil = json['avatar'].toString();
+    // Diberi proteksi '??' supaya jika data dari internet kosong, aplikasi tidak crash
+    int idBaru = json['id'] ?? 0; 
+    String emailBaru = (json['email'] ?? '').toString();
+    String namaDepan = (json['first_name'] ?? '').toString();
+    String namaBelakang = (json['last_name'] ?? '').toString();
+    String fotoProfil = (json['avatar'] ?? '').toString();
 
     return UserModel(
       id: idBaru,
@@ -34,6 +35,6 @@ class UserModel {
 
   // Getter untuk menggabungkan nama lengkap dengan fungsi standar
   String get namaLengkap {
-    return '$firstName $lastName';
+    return '$firstName $lastName'.trim(); // Ditambah .trim() agar spasi rapi jika nama belakang kosong
   }
 }

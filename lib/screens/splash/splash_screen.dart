@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'auth/login_page.dart'; 
+import 'auth/login_page.dart'; // Memastikan mengarah ke folder auth kamu
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -12,23 +12,24 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final PageController _slideController = PageController();
   int _halamanAktif = 0;
 
+  // Data konten asli buatanmu
   final List<Map<String, dynamic>> _kontenOnboarding = [
     {
-      'judul': 'Selamat Datang di Lapak Bantu!',
+      'judul': 'Selamat Datang di Lapak Bantul!',
       'subjudul': 'Solusi cerdas untuk mengelola dan memantau perkembangan usahamu dalam satu genggaman.',
-      'gambar': 'assets/images/foto_1.png', // Gunakan watermarked_img_8075999759053577945.png
+      'gambar': 'assets/images/foto_1.png', 
       'warna': const Color(0xFF1A568C),
     },
     {
       'judul': 'Jaring Mitra Lebih Luas',
       'subjudul': 'Temukan mitra terpercaya dan bangun kolaborasi strategis untuk memajukan UMKM bersama.',
-      'gambar': 'assets/images/foto_2.png', // Gunakan watermarked_img_16300333613400438826.png
+      'gambar': 'assets/images/foto_2.png', 
       'warna': const Color(0xFF1E88E5),
     },
     {
       'judul': 'Tumbuh Bersama Pelanggan',
       'subjudul': 'Ciptakan hubungan yang lebih dekat, hangat, dan loyal dengan setiap pelanggan setiamu.',
-      'gambar': 'assets/images/foto_3.png', // Gunakan watermarked_img_1526485277338073928.png
+      'gambar': 'assets/images/foto_3.png', 
       'warna': const Color(0xFF1565C0),
     },
   ];
@@ -127,6 +128,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 }
 
+// Widget tampilan halaman yang diletakkan di luar lingkup class State utama agar tidak bentrok
 class _TampilanHalaman extends StatelessWidget {
   final Map<String, dynamic> data;
   const _TampilanHalaman({required this.data});
@@ -139,11 +141,27 @@ class _TampilanHalaman extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Image.asset(data['gambar'], height: 250, errorBuilder: (context, error, stackTrace) => const Icon(Icons.image, size: 200, color: Colors.white)),
+          Image.asset(
+            data['gambar'], 
+            height: 250, 
+            errorBuilder: (context, error, stackTrace) => const Icon(
+              Icons.image, 
+              size: 200, 
+              color: Colors.white
+            )
+          ),
           const SizedBox(height: 50),
-          Text(data['judul'], textAlign: TextAlign.center, style: const TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold)),
+          Text(
+            data['judul'], 
+            textAlign: TextAlign.center, 
+            style: const TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold)
+          ),
           const SizedBox(height: 20),
-          Text(data['subjudul'], textAlign: TextAlign.center, style: const TextStyle(color: Colors.white70, fontSize: 16)),
+          Text(
+            data['subjudul'], 
+            textAlign: TextAlign.center, 
+            style: const TextStyle(color: Colors.white70, fontSize: 16)
+          ),
           const SizedBox(height: 100),
         ],
       ),

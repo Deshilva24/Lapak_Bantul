@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'screens/splash/splash_screen.dart';
+// Memastikan import mengarah ke file splash_screen yang menyimpan class OnboardingScreen
+import 'screens/splash/splash_screen.dart'; 
 
 void main() {
   runApp(const MyApp());
@@ -13,8 +14,11 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Lapak Bantul',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        // Menggunakan ColorScheme karena primarySwatch sudah mulai deprecated di Flutter baru
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF1A568C)),
+        useMaterial3: true,
       ),
+      // Memanggil class OnboardingScreen dari file splash_screen.dart kamu
       home: const OnboardingScreen(),
       debugShowCheckedModeBanner: false,
     );

@@ -3,6 +3,8 @@ import 'package:flutter_application_2/home_page.dart';
 import 'package:flutter_application_2/pbb1.dart'; 
 import 'package:flutter_application_2/detail.dart';
 import 'package:flutter_application_2/layanan_keliling.dart';
+import 'package:flutter_application_2/screens/api_demo_page.dart';
+
 
 class MainNavigation extends StatefulWidget {
   const MainNavigation({super.key});
@@ -15,13 +17,13 @@ class _MainNavigationState extends State<MainNavigation> {
   int _currentIndex = 0; // Mengontrol menu bawah mana yang sedang aktif
 
   // Menggunakan Getter agar parameter dinamis dari file asli kamu bisa masuk tanpa error const
-  List<Widget> get _pages => [
+    List<Widget> get _pages => [
     const HomePage(),             // Index 0: Beranda (home_page.dart)
     const PbbPage(),              // Index 1: PBB langsung ke Input NOP (pbb1.dart)
     const DetailSpptPage(statusBayar: "Sudah Lunas", tahun: "2026"), // Index 2: Kendaraan langsung ke Detail SPPT (detail.dart)
     const DummyPage(title: "Usaha"),         // Index 3: Usaha (Kosong Dulu)
     const LayananKelilingPage(),             // Index 4: Keliling (layanan_keliling.dart)
-    const DummyPage(title: "API Demo"),      // Index 5: API Demo (Kosong Dulu)
+    const ApiDemoPage(),                      // Index 5: API Demo (real page)
   ];
 
   @override

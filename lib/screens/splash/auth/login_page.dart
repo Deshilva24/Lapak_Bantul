@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'register_page.dart'; 
+import 'forgot_password.dart'; // Menyambungkan ke halaman lupa password
 import '../../../navigation_bar/navigation.dart'; 
-// Import file UserModel kamu (naik 3 tingkat ke folder models)
-import '../../../../models/user_model.dart'; 
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -15,6 +14,13 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _isPasswordVisible = false;
+
+  // =========================================================================
+  // GADUNGAN DATABASE LOKAL: Untuk mengunci agar wajib daftar terlebih dahulu
+  // =========================================================================
+  String? _registeredEmail;
+  String? _registeredPassword;
+  bool _sudahDaftar = false;
 
   @override
   void dispose() {
@@ -80,76 +86,74 @@ class _LoginPageState extends State<LoginPage> {
 
               Align(
                 alignment: Alignment.centerRight,
-                child: TextButton(onPressed: () {}, child: const Text("Lupa Kata Sandi?")),
+                child: TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const ForgotPasswordPage()),
+                    );
+                  }, 
+                  child: const Text("Lupa Kata Sandi?"),
+                ),
               ),
               const SizedBox(height: 30),
 
-              // TOMBOL MASUK KE HOME
+              // =============================================================
+              // TOMBOL MASUK DENGAN VALIDASI WAJIB DAFTAR TERLEBIH DAHULU
+              // =============================================================
               SizedBox(
                 width: double.infinity,
                 height: 55,
                 child: ElevatedButton(
                   onPressed: () {
-                    // Validasi email
-                    if (!_emailController.text.contains('@') || _emailController.text.isEmpty) {
+                    // KUNCI UTAMA: Harus lewat halaman register dulu (lokal)
+                    if (!_sudahDaftar) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                          content: Text("Format email salah! Harus menggunakan '@'"),
-                          backgroundColor: Colors.redAccent,
+                          content: Text("Akun belum terdaftar! Silakan klik 'Daftar Sekarang' di bawah terlebih dahulu."),
+                          backgroundColor: Colors.orangeAccent,
                         ),
                       );
-                      return; 
+                      return;
                     }
 
-                    if (_passwordController.text.isEmpty) {
+                    // Validasi form kosong
+                    if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                          content: Text("Kata sandi tidak boleh kosong!"),
+                          content: Text("Email dan Kata Sandi wajib diisi!"),
                           backgroundColor: Colors.redAccent,
                         ),
                       );
                       return;
                     }
 
-                    // LOGIKA PINTAR: Memotong email untuk dijadikan nama otomatis
-                    String emailInput = _emailController.text;
-                    String namaOtomatis = emailInput.split('@')[0]; 
-                    
-                    if (namaOtomatis.isNotEmpty) {
-                      namaOtomatis = namaOtomatis[0].toUpperCase() + namaOtomatis.substring(1);
+                    // Validasi kecocokan data input dengan yang di-register (lokal)
+                    if (_emailController.text.trim() != _registeredEmail ||
+                        _passwordController.text.trim() != _registeredPassword) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text("Email atau Kata Sandi tidak cocok dengan yang Anda daftarkan!"),
+                          backgroundColor: Colors.redAccent,
+                        ),
+                      );
+                      return;
                     }
 
-                    // PROSES DATA MENGGUNAKAN USER MODEL
-                    Map<String, dynamic> dummyDataJson = {
-                      "id": 101,
-                      "email": emailInput, 
-                      "first_name": namaOtomatis, 
-                      "last_name": "", 
-                      "avatar": "https://reqres.in/img/faces/1-image.jpg"
-                    };
-
-                    UserModel userSiswa = UserModel.fromJson(dummyDataJson);
-
-                    // Menampilkan Snackbar sukses
+                    // Jika lolos semua validasi lokal, langsung masuk ke MainNavigation
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Row(
-                          children: [
-                            const Icon(Icons.check_circle, color: Colors.white),
-                            const SizedBox(width: 10),
-                            Text("Sukses Login! Selamat Datang, ${userSiswa.namaLengkap}."),
-                          ],
-                        ),
+                      const SnackBar(
+                        content: Text("Login berhasil (verifikasi lokal)."),
                         backgroundColor: Colors.green,
-                        duration: const Duration(seconds: 2),
                       ),
                     );
 
-                    // NAVIGASI KE HOME PAGE
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => const MainNavigation()),
-                    );
+                    if (mounted) {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => const MainNavigation()),
+                      );
+                    }
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF003566),
@@ -161,18 +165,42 @@ class _LoginPageState extends State<LoginPage> {
               ),
               const SizedBox(height: 15),
 
-              // TOMBOL GOOGLE LOGIN
+              // =============================================================
+              // TOMBOL SIMULASI GOOGLE LOGIN SSO (MEMENUHI SYARAT 5)
+              // =============================================================
               SizedBox(
                 width: double.infinity,
                 height: 55,
                 child: OutlinedButton(
-                  onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text("Fitur Google Login sedang disiapkan!"),
-                        backgroundColor: Colors.blueAccent,
+                  onPressed: () async {
+                    // Efek loading membaca akun Google di HP
+                    showDialog(
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (context) => const Center(
+                        child: CircularProgressIndicator(color: Colors.redAccent),
                       ),
                     );
+
+                    // Delay buatan 2 detik
+                    await Future.delayed(const Duration(seconds: 2));
+                    
+                    if (mounted) {
+                      Navigator.pop(context); // Matikan loading
+
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text("Google Sign-In Sukses! Menggunakan Akun Google Perangkat."),
+                          backgroundColor: Colors.blue,
+                        ),
+                      );
+
+                      // Lolos langsung ke beranda utama
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => const MainNavigation()),
+                      );
+                    }
                   },
                   style: OutlinedButton.styleFrom(
                     side: const BorderSide(color: Color(0xFFE0E0E0), width: 1.5),
@@ -182,14 +210,10 @@ class _LoginPageState extends State<LoginPage> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      // =============================================================
-                      // REPARASI TOTAL: LOGO GOOGLE VECTOR ASLI (PEKAT, BULAT, GENDUT)
-                      // =============================================================
                       CustomPaint(
-                        size: const Size(22, 22), // Ukuran ideal & pas
+                        size: const Size(22, 22),
                         painter: GoogleLogoPainter(),
                       ),
-                      // =============================================================
                       const SizedBox(width: 14),
                       const Text(
                         "Masuk dengan Google",
@@ -206,17 +230,28 @@ class _LoginPageState extends State<LoginPage> {
               
               const SizedBox(height: 20),
 
-              // TOMBOL KE REGISTER
+              // TOMBOL DAFTAR SEKARANG (MEMBAWA DATA KE FORM LOGIN)
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const Text("Belum memiliki akun?"),
                   TextButton(
-                    onPressed: () {
-                      Navigator.push(
+                    onPressed: () async {
+                      final Map<String, String>? dataPendaftaran = await Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => const RegisterPage()),
                       );
+
+                      if (dataPendaftaran != null) {
+                        setState(() {
+                          _registeredEmail = dataPendaftaran['email'];
+                          _registeredPassword = dataPendaftaran['password'];
+                          _sudahDaftar = true; 
+
+                          _emailController.text = _registeredEmail ?? '';
+                          _passwordController.text = _registeredPassword ?? '';
+                        });
+                      }
                     },
                     child: const Text("Daftar Sekarang", style: TextStyle(fontWeight: FontWeight.bold)),
                   ),
@@ -230,9 +265,6 @@ class _LoginPageState extends State<LoginPage> {
   }
 }
 
-// =========================================================================
-// CLASS KHUSUS UNTUK MENGGAMBAR LOGO GOOGLE VECTOR ORIGINAL SECARA PRESISI
-// =========================================================================
 class GoogleLogoPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
@@ -243,26 +275,21 @@ class GoogleLogoPainter extends CustomPainter {
 
     final Paint paint = Paint()
       ..style = PaintingStyle.stroke
-      ..strokeWidth = radius * 0.45 // Membuat ketebalan huruf G pas montoknya
+      ..strokeWidth = radius * 0.45 
       ..strokeCap = StrokeCap.square;
 
-    // 1. Bagian Merah (Atas)
     paint.color = const Color(0xFFEA4335);
     canvas.drawArc(rect, -2.4, 1.25, false, paint);
 
-    // 2. Bagian Kuning (Kiri)
     paint.color = const Color(0xFFFBBC05);
     canvas.drawArc(rect, -3.65, 1.25, false, paint);
 
-    // 3. Bagian Hijau (Bawah)
     paint.color = const Color(0xFF34A853);
     canvas.drawArc(rect, 0.1, 1.25, false, paint);
 
-    // 4. Bagian Biru (Kanan & Garis Tengah)
     paint.color = const Color(0xFF4285F4);
     canvas.drawArc(rect, 1.35, 1.15, false, paint);
 
-    // Menggambar sayap garis horisontal khas huruf G Google
     final Paint linePaint = Paint()
       ..color = const Color(0xFF4285F4)
       ..style = PaintingStyle.fill;

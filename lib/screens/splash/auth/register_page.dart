@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-// ignore: unused_import
-import 'login_page.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -10,6 +8,9 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
+  // Global Key untuk mengontrol validasi Form secara otomatis
+  final _formKey = GlobalKey<FormState>();
+
   final _inputNama = TextEditingController();
   final _inputEmail = TextEditingController();
   final _inputPhone = TextEditingController();
@@ -29,38 +30,33 @@ class _RegisterPageState extends State<RegisterPage> {
     super.dispose();
   }
 
+  // =========================================================================
+  // PERBAIKAN ALUR NAVIGASI: KEMBALI KE HALAMAN LOGIN SETELAH BERHASIL
+  // =========================================================================
   void _prosesDaftar() {
-    if (_inputNama.text.isEmpty || _inputEmail.text.isEmpty || _inputPass.text.isEmpty) {
+    // Memicu pengecekan seluruh validator di TextFormField secara otomatis
+    if (_formKey.currentState!.validate()) {
+      // Jika semua form valid, tampilkan sukses
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Mohon lengkapi semua data!"),
-          backgroundColor: Colors.orange,
+        SnackBar(
+          content: Row(
+            children: [
+              const Icon(Icons.check_circle, color: Colors.white),
+              const SizedBox(width: 10),
+              Text("Pendaftaran Berhasil! Selamat Datang, ${_inputNama.text}."),
+            ],
+          ),
+          backgroundColor: Colors.green,
+          duration: const Duration(seconds: 2),
         ),
       );
-      return;
+
+      // Kembalikan data pendaftaran ke halaman login sebagai syarat wajib login
+      Navigator.pop(context, {
+        'email': _inputEmail.text.trim(),
+        'password': _inputPass.text.trim(),
+      });
     }
-
-    // Cek apakah password cocok
-    if (_inputPass.text != _inputConfirm.text) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Kata sandi tidak cocok!"),
-          backgroundColor: Colors.red,
-        ),
-      );
-      return;
-    }
-
-    // Jika OK, tampilkan sukses dan pindah halaman
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text("Pendaftaran Berhasil!"),
-        backgroundColor: Colors.green,
-      ),
-    );
-
-    // Berpindah kembali ke halaman Login
-    Navigator.pop(context);
   }
 
   @override
@@ -77,86 +73,145 @@ class _RegisterPageState extends State<RegisterPage> {
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              "Daftar Akun",
-              style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Color(0xFF003566)),
-            ),
-            const Text(
-              "Buat akun baru untuk mengakses LaPak Bantul",
-              style: TextStyle(color: Colors.grey, fontSize: 14),
-            ),
-            const SizedBox(height: 32),
+        child: Form(
+          key: _formKey, // Membungkus inputan dengan widget Form
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                "Daftar Akun",
+                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Color(0xFF003566)),
+              ),
+              const Text(
+                "Buat akun baru untuk mengakses LaPak Bantul",
+                style: TextStyle(color: Colors.grey, fontSize: 14),
+              ),
+              const SizedBox(height: 32),
 
-            _buildField("Nama Lengkap", Icons.person_outline, _inputNama),
-            const SizedBox(height: 16),
-            _buildField("Email", Icons.email_outlined, _inputEmail),
-            const SizedBox(height: 16),
-            _buildField("Nomor Telepon", Icons.phone_android, _inputPhone),
-            const SizedBox(height: 16),
+              _buildField("Nama Lengkap", Icons.person_outline, _inputNama, (value) {
+                if (value == null || value.isEmpty) {
+                  return "Nama lengkap tidak boleh kosong!";
+                }
+                return null;
+              }),
+              const SizedBox(height: 16),
+              
+              _buildField("Email", Icons.email_outlined, _inputEmail, (value) {
+                if (value == null || value.isEmpty) {
+                  return "Email tidak boleh kosong!";
+                }
+                if (!value.contains('@')) {
+                  return "Format email salah! Harus menggunakan '@'";
+                }
+                return null;
+              }),
+              const SizedBox(height: 16),
+              
+              _buildField("Nomor Telepon", Icons.phone_android, _inputPhone, (value) {
+                if (value == null || value.isEmpty) {
+                  return "Nomor telepon tidak boleh kosong!";
+                }
+                return null;
+              }, keyboardType: TextInputType.phone),
+              const SizedBox(height: 16),
 
-            _buildPasswordField("Kata Sandi", _inputPass, _isSecure, () {
-              setState(() => _isSecure = !_isSecure);
-            }),
-            const SizedBox(height: 16),
-            _buildPasswordField("Konfirmasi Kata Sandi", _inputConfirm, _isConfirmSecure, () {
-              setState(() => _isConfirmSecure = !_isConfirmSecure);
-            }),
+              _buildPasswordField("Kata Sandi", _inputPass, _isSecure, () {
+                setState(() => _isSecure = !_isSecure);
+              }, (value) {
+                if (value == null || value.isEmpty) {
+                  return "Kata sandi tidak boleh kosong!";
+                }
+                if (value.length < 6) {
+                  return "Kata sandi minimal harus 6 karakter!";
+                }
+                return null;
+              }),
+              const SizedBox(height: 16),
+              
+              _buildPasswordField("Konfirmasi Kata Sandi", _inputConfirm, _isConfirmSecure, () {
+                setState(() => _isConfirmSecure = !_isConfirmSecure);
+              }, (value) {
+                if (value == null || value.isEmpty) {
+                  return "Konfirmasi kata sandi tidak boleh kosong!";
+                }
+                if (value != _inputPass.text) {
+                  return "Kata sandi tidak cocok!";
+                }
+                return null;
+              }),
 
-            const SizedBox(height: 40),
+              const SizedBox(height: 40),
 
-            // Tombol Daftar yang sudah aktif
-            SizedBox(
-              width: double.infinity,
-              height: 55,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF003566),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                ),
-                onPressed: _prosesDaftar, // Memanggil fungsi di atas
-                child: const Text(
-                  "Daftar",
-                  style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+              // Tombol Daftar
+              SizedBox(
+                width: double.infinity,
+                height: 55,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF003566),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                  onPressed: _prosesDaftar,
+                  child: const Text(
+                    "Daftar",
+                    style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 24),
-          ],
+              const SizedBox(height: 24),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  // Widget pembantu (Helper) agar kode rapi
-  Widget _buildField(String label, IconData icon, TextEditingController ctrl) {
+  // Widget pembantu (Helper) yang sudah di-upgrade ke TextFormField + Validator
+  Widget _buildField(
+    String label, 
+    IconData icon, 
+    TextEditingController ctrl, 
+    String? Function(String?)? validator,
+    {TextInputType keyboardType = TextInputType.text}
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(label, style: const TextStyle(fontWeight: FontWeight.bold)),
         const SizedBox(height: 8),
-        TextField(
+        TextFormField(
           controller: ctrl,
+          keyboardType: keyboardType,
+          validator: validator, // Menyuntikkan fungsi validasi
           decoration: InputDecoration(
             prefixIcon: Icon(icon, color: const Color(0xFF003566)),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: Colors.redAccent),
+            ),
           ),
         ),
       ],
     );
   }
 
-  Widget _buildPasswordField(String label, TextEditingController ctrl, bool hide, VoidCallback toggle) {
+  Widget _buildPasswordField(
+    String label, 
+    TextEditingController ctrl, 
+    bool hide, 
+    VoidCallback toggle,
+    String? Function(String?)? validator
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(label, style: const TextStyle(fontWeight: FontWeight.bold)),
         const SizedBox(height: 8),
-        TextField(
+        TextFormField(
           controller: ctrl,
           obscureText: hide,
+          validator: validator, // Menyuntikkan fungsi validasi
           decoration: InputDecoration(
             prefixIcon: const Icon(Icons.lock_outline, color: Color(0xFF003566)),
             suffixIcon: IconButton(
@@ -164,6 +219,10 @@ class _RegisterPageState extends State<RegisterPage> {
               onPressed: toggle,
             ),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: Colors.redAccent),
+            ),
           ),
         ),
       ],

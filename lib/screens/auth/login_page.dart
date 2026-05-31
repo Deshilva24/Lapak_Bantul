@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'register_page.dart'; 
 import 'forgot_password.dart'; // Menyambungkan ke halaman lupa password
 import '../../navigation_bar/navigation.dart'; 
+import 'package:google_sign_in/google_sign_in.dart';
+import '../../services/google_user_service.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -21,6 +23,63 @@ class _LoginPageState extends State<LoginPage> {
   String? _registeredEmail;
   String? _registeredPassword;
   bool _sudahDaftar = false;
+
+// Untuk versi terbaru, gunakan named parameters langsung
+GoogleSignIn get _googleSignIn => GoogleSignIn(
+  clientId: '604027218880-qjdn17p8u1p4u271fmh4st642piq4gtd.apps.googleusercontent.com',
+);
+
+
+Future<void> _handleGoogleSignIn() async {
+  try {
+    // 1. Panggil pop-up login
+    final GoogleSignInAccount? account = await _googleSignIn.signIn();
+
+    // 2. Cek apakah user membatalkan
+    if (account == null) {
+      debugPrint("User membatalkan login");
+      return;
+    }
+
+    // 3. AMBIL DATA DARI SINI
+    // Google sudah memberikan data account.email dan account.id
+    debugPrint("Nama: ${account.displayName}");
+    debugPrint("Email: ${account.email}");
+    
+    // PENTING: Jika kamu butuh data untuk dikirim ke API, 
+    // kamu harus mengambil authentication-nya di sini:
+    final GoogleSignInAuthentication auth = await account.authentication;
+    debugPrint("ID Token: ${auth.idToken}");
+    
+    // SIMPAN USER DATA KE SERVICE
+    GoogleUserService().setUser(account, auth);
+    debugPrint("User data disimpan ke GoogleUserService");
+
+    // 4. Jika login sukses, baru pindah halaman
+    if (!mounted) return;
+    
+    // Tampilkan notifikasi kecil bahwa login berhasil
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text("Login Berhasil! Selamat datang, ${account.displayName}"),
+        backgroundColor: Colors.green
+      ),
+    );
+
+    // 5. Pindah ke halaman utama
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const MainNavigation()),
+    );
+    
+  } catch (error) {
+    debugPrint('Error sign-in: $error');
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Login gagal: $error"), backgroundColor: Colors.red),
+    );
+  }
+}
 
   @override
   void dispose() {
@@ -172,36 +231,9 @@ class _LoginPageState extends State<LoginPage> {
                 width: double.infinity,
                 height: 55,
                 child: OutlinedButton(
-                  onPressed: () async {
-                    // Efek loading membaca akun Google di HP
-                    showDialog(
-                      context: context,
-                      barrierDismissible: false,
-                      builder: (context) => const Center(
-                        child: CircularProgressIndicator(color: Colors.redAccent),
-                      ),
-                    );
+                  
+                  onPressed: _handleGoogleSignIn,
 
-                    // Delay buatan 2 detik
-                    await Future.delayed(const Duration(seconds: 2));
-                    
-                    if (mounted) {
-                      Navigator.pop(context); // Matikan loading
-
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text("Google Sign-In Sukses! Menggunakan Akun Google Perangkat."),
-                          backgroundColor: Colors.blue,
-                        ),
-                      );
-
-                      // Lolos langsung ke beranda utama
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (context) => const MainNavigation()),
-                      );
-                    }
-                  },
                   style: OutlinedButton.styleFrom(
                     side: const BorderSide(color: Color(0xFFE0E0E0), width: 1.5),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),

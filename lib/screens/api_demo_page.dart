@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../models/user_model.dart'; 
 import '../config/env.dart';
+import '../services/google_user_service.dart';
 
 class ApiDemoPage extends StatefulWidget {
   const ApiDemoPage({super.key});
@@ -14,7 +15,29 @@ class ApiDemoPage extends StatefulWidget {
 class _ApiDemoPageState extends State<ApiDemoPage> {
   
   Future<List<UserModel>> ambilDataPengguna() async {
-    // Jika belum men-set API key di Env, kembalikan data sample lokal agar GUI langsung terlihat
+    // PRIORITAS 1: Cek apakah user sudah login via Google
+    final googleUserService = GoogleUserService();
+    if (googleUserService.isLoggedIn) {
+      debugPrint('ambilDataPengguna: User sudah login via Google — menampilkan data real user');
+      final googleUser = googleUserService.currentUser!;
+      
+      // Ambil nama dan pisahkan menjadi firstName dan lastName
+      final namaParts = (googleUser.displayName ?? 'User').split(' ');
+      final firstName = namaParts.isNotEmpty ? namaParts[0] : 'User';
+      final lastName = namaParts.length > 1 ? namaParts.sublist(1).join(' ') : '';
+      
+      return [
+        UserModel(
+          id: 1, 
+          email: googleUser.email,
+          firstName: firstName,
+          lastName: lastName,
+          avatar: googleUser.photoUrl ?? '',
+        ),
+      ];
+    }
+    
+    // PRIORITAS 2: Jika belum men-set API key di Env, kembalikan data sample lokal agar GUI langsung terlihat
     if (Env.apiKey.isEmpty) {
       debugPrint('ambilDataPengguna: Env.apiKey kosong — menggunakan data sample lokal');
       return [
@@ -25,6 +48,7 @@ class _ApiDemoPageState extends State<ApiDemoPage> {
       ];
     }
 
+    // PRIORITAS 3: Fetch dari API jika sudah ada API key
     final String urlEndpoint = "${Env.baseUrl}/users?page=1";
 
     try {
@@ -89,15 +113,33 @@ class _ApiDemoPageState extends State<ApiDemoPage> {
 
   @override
   Widget build(BuildContext context) {
+    final googleUserService = GoogleUserService();
+    final isGoogleLoggedIn = googleUserService.isLoggedIn;
+    
     return Scaffold(
       backgroundColor: Colors.grey[100],
       appBar: AppBar(
-        title: const Text(
-          "Data Pengguna Reqres API",
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 20),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              "Data Pengguna",
+              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 20),
+            ),
+            if (isGoogleLoggedIn)
+              Text(
+                "Akun Google: ${googleUserService.userEmail}",
+                style: const TextStyle(color: Colors.white70, fontSize: 12),
+              )
+            else
+              const Text(
+                "Data dari Reqres API",
+                style: TextStyle(color: Colors.white70, fontSize: 12),
+              ),
+          ],
         ),
         backgroundColor: const Color(0xFF003566),
-        centerTitle: true,
+        centerTitle: false,
         elevation: 0,
       ),
       body: FutureBuilder<List<UserModel>>(

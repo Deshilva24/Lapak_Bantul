@@ -18,7 +18,7 @@ class ForgotPasswordPage extends StatelessWidget {
             const SizedBox(height: 20),
             const Text(
               'Masukkan email Anda untuk mereset kata sandi.',
-              style: TextStyle(fontSize: 16, color: Color.fromARGB(221, 250, 250, 250)),
+              style: TextStyle(fontSize: 16, color: Colors.white),
             ),
             const SizedBox(height: 20),
             TextField(
@@ -45,7 +45,7 @@ class ForgotPasswordPage extends StatelessWidget {
                     ),
                   );
                 },
-                child: const Text('Kirim Link Reset', style: TextStyle(fontSize: 16)),
+                child: const Text('Kirim Link Reset', style: TextStyle(fontSize: 16, color: Colors.white)),
               ),
             ),
           ],

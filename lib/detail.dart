@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class DetailSpptPage extends StatelessWidget {
-  // 1. Tambahkan parameter di sini agar data bisa dikirim dari Page 5
+
   final String statusBayar;
   final String tahun;
 
@@ -15,7 +15,6 @@ class DetailSpptPage extends StatelessWidget {
   Widget build(BuildContext context) {
     const Color mainBlue = Color(0xFF0A3D6D);
 
-    // Tentukan warna badge berdasarkan status
     Color badgeColor = statusBayar == "Sudah Lunas" ? const Color(0xFF4CAF50) : const Color.fromARGB(255, 255, 0, 0);
 
     return Scaffold(
@@ -28,7 +27,7 @@ class DetailSpptPage extends StatelessWidget {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          "Rincian Pajak $tahun", // Tahun jadi dinamis
+          "Rincian Pajak $tahun", 
           style: const TextStyle(color: mainBlue, fontWeight: FontWeight.bold, fontSize: 18),
         ),
         centerTitle: true,
@@ -50,7 +49,6 @@ class DetailSpptPage extends StatelessWidget {
 
             _buildDetailItem("Lokasi", "DS. Ngireng-ireng, RT01/RW01"),
             
-            // 2. Gunakan statusBayar yang dikirim dan warna badge dinamis
             _buildDetailStatus("Status Pembayaran", statusBayar, badgeColor),
             
             _buildDetailItem("Tahun Pajak", tahun),
@@ -60,7 +58,6 @@ class DetailSpptPage extends StatelessWidget {
 
             const SizedBox(height: 40),
             
-            // Tombol hanya muncul jika sudah lunas (Logika tambahan)
             if (statusBayar == "Sudah Lunas")
               SizedBox(
                 width: double.infinity,

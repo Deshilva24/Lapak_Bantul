@@ -62,7 +62,7 @@ class HasilPbbPage extends StatelessWidget {
                   tahun: "2021",
                   lokasi: "DS. Ngireng-ireng RT01/RW01",
                   nominal: "200,000",
-                  status: "Belum Lunas", // Sesuaikan tulisannya dengan di detail.dart
+                  status: "Belum Lunas",
                   statusColor: const Color(0xFFF27878),
                 ),
                 const SizedBox(height: 15),
@@ -72,7 +72,7 @@ class HasilPbbPage extends StatelessWidget {
                   tahun: "2020",
                   lokasi: "DS. Ngireng-ireng RT01/RW01",
                   nominal: "376,000",
-                  status: "Sudah Lunas", // Sesuaikan tulisannya dengan di detail.dart
+                  status: "Sudah Lunas", 
                   statusColor: const Color(0xFF4CAF50),
                 ),
                 const SizedBox(height: 20),
@@ -96,13 +96,13 @@ class HasilPbbPage extends StatelessWidget {
 
     return InkWell(
       onTap: () {
-        // INI PERBAIKANNYA: Mengirim parameter ke Page 6
+
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => DetailSpptPage(
-              statusBayar: status, // Data status dikirim secara dinamis
-              tahun: tahun,        // Data tahun dikirim secara dinamis
+              statusBayar: status, 
+              tahun: tahun,        
             ),
           ),
         );
@@ -174,7 +174,7 @@ class HasilPbbPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 15),
                   const Divider(),
-                  const Center( // Ditambahkan const agar tidak kuning
+                  const Center( 
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [

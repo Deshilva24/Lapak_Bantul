@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'home2.dart'; // Ke Page 2
-import 'pbb1.dart';  // Ke Page 4
+import 'home2.dart'; 
+import 'pbb1.dart';  
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});

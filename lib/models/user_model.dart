@@ -15,9 +15,9 @@ class UserModel {
     required this.avatar,
   });
 
-  // Fungsi konversi JSON (Sudah dilengkapi pengaman null safety)
+  // Fungsi konversi JSON 
   factory UserModel.fromJson(Map<String, dynamic> json) {
-    // Diberi proteksi '??' supaya jika data dari internet kosong, aplikasi tidak crash
+
     int idBaru = json['id'] ?? 0; 
     String emailBaru = (json['email'] ?? '').toString();
     String namaDepan = (json['first_name'] ?? '').toString();
@@ -33,8 +33,7 @@ class UserModel {
     );
   }
 
-  // Getter untuk menggabungkan nama lengkap dengan fungsi standar
   String get namaLengkap {
-    return '$firstName $lastName'.trim(); // Ditambah .trim() agar spasi rapi jika nama belakang kosong
+    return '$firstName $lastName'.trim(); 
   }
 }

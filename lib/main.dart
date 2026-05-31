@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-// Memastikan import mengarah ke file splash_screen yang menyimpan class OnboardingScreen
 import 'screens/splash/splash_screen.dart'; 
 
 void main() {

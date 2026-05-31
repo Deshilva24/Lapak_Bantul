@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'register_page.dart'; 
-import 'forgot_password.dart'; // Menyambungkan ke halaman lupa password
+import 'forgot_password.dart'; 
 import '../../navigation_bar/navigation.dart'; 
 import 'package:google_sign_in/google_sign_in.dart';
 import '../../services/google_user_service.dart';
@@ -17,14 +17,10 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _passwordController = TextEditingController();
   bool _isPasswordVisible = false;
 
-  // =========================================================================
-  // GADUNGAN DATABASE LOKAL: Untuk mengunci agar wajib daftar terlebih dahulu
-  // =========================================================================
   String? _registeredEmail;
   String? _registeredPassword;
   bool _sudahDaftar = false;
 
-// Untuk versi terbaru, gunakan named parameters langsung
 GoogleSignIn get _googleSignIn => GoogleSignIn(
   clientId: '604027218880-qjdn17p8u1p4u271fmh4st642piq4gtd.apps.googleusercontent.com',
 );
@@ -32,22 +28,18 @@ GoogleSignIn get _googleSignIn => GoogleSignIn(
 
 Future<void> _handleGoogleSignIn() async {
   try {
-    // 1. Panggil pop-up login
+    // Panggil pop-up login
     final GoogleSignInAccount? account = await _googleSignIn.signIn();
 
-    // 2. Cek apakah user membatalkan
+    // Cek apakah user membatalkan
     if (account == null) {
       debugPrint("User membatalkan login");
       return;
     }
 
-    // 3. AMBIL DATA DARI SINI
-    // Google sudah memberikan data account.email dan account.id
     debugPrint("Nama: ${account.displayName}");
     debugPrint("Email: ${account.email}");
     
-    // PENTING: Jika kamu butuh data untuk dikirim ke API, 
-    // kamu harus mengambil authentication-nya di sini:
     final GoogleSignInAuthentication auth = await account.authentication;
     debugPrint("ID Token: ${auth.idToken}");
     
@@ -55,10 +47,9 @@ Future<void> _handleGoogleSignIn() async {
     GoogleUserService().setUser(account, auth);
     debugPrint("User data disimpan ke GoogleUserService");
 
-    // 4. Jika login sukses, baru pindah halaman
     if (!mounted) return;
     
-    // Tampilkan notifikasi kecil bahwa login berhasil
+    // Tampilan notifikasi kecil bahwa login berhasil
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text("Login Berhasil! Selamat datang, ${account.displayName}"),
@@ -157,9 +148,7 @@ Future<void> _handleGoogleSignIn() async {
               ),
               const SizedBox(height: 30),
 
-              // =============================================================
-              // TOMBOL MASUK DENGAN VALIDASI WAJIB DAFTAR TERLEBIH DAHULU
-              // =============================================================
+             // wajib daftar
               SizedBox(
                 width: double.infinity,
                 height: 55,
@@ -199,7 +188,6 @@ Future<void> _handleGoogleSignIn() async {
                       return;
                     }
 
-                    // Jika lolos semua validasi lokal, langsung masuk ke MainNavigation
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content: Text("Login berhasil (verifikasi lokal)."),
@@ -224,9 +212,7 @@ Future<void> _handleGoogleSignIn() async {
               ),
               const SizedBox(height: 15),
 
-              // =============================================================
-              // TOMBOL SIMULASI GOOGLE LOGIN SSO (MEMENUHI SYARAT 5)
-              // =============================================================
+              //tombol google
               SizedBox(
                 width: double.infinity,
                 height: 55,
@@ -262,7 +248,7 @@ Future<void> _handleGoogleSignIn() async {
               
               const SizedBox(height: 20),
 
-              // TOMBOL DAFTAR SEKARANG (MEMBAWA DATA KE FORM LOGIN)
+              // TOMBOL DAFTAR SEKARANG 
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [

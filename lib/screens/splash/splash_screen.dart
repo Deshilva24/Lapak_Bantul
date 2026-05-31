@@ -12,7 +12,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final PageController _slideController = PageController();
   int _halamanAktif = 0;
 
-  // Data konten asli buatanmu
   final List<Map<String, dynamic>> _kontenOnboarding = [
     {
       'judul': 'Selamat Datang di Lapak Bantul!',
@@ -128,7 +127,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 }
 
-// Widget tampilan halaman yang diletakkan di luar lingkup class State utama agar tidak bentrok
 class _TampilanHalaman extends StatelessWidget {
   final Map<String, dynamic> data;
   const _TampilanHalaman({required this.data});

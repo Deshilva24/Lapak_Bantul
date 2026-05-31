@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'pbb1.dart'; 
 
-// Pindahkan ke sini agar bisa dipakai semua class & tidak bikin kuning (warning)
 const Color mainBlue = Color(0xFF0A3D6D);
 
 class LayananKelilingPage extends StatelessWidget {

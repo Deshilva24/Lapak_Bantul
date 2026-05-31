@@ -21,7 +21,6 @@ class _ApiDemoPageState extends State<ApiDemoPage> {
       debugPrint('ambilDataPengguna: User sudah login via Google — menampilkan data real user');
       final googleUser = googleUserService.currentUser!;
       
-      // Ambil nama dan pisahkan menjadi firstName dan lastName
       final namaParts = (googleUser.displayName ?? 'User').split(' ');
       final firstName = namaParts.isNotEmpty ? namaParts[0] : 'User';
       final lastName = namaParts.length > 1 ? namaParts.sublist(1).join(' ') : '';
@@ -37,7 +36,6 @@ class _ApiDemoPageState extends State<ApiDemoPage> {
       ];
     }
     
-    // PRIORITAS 2: Jika belum men-set API key di Env, kembalikan data sample lokal agar GUI langsung terlihat
     if (Env.apiKey.isEmpty) {
       debugPrint('ambilDataPengguna: Env.apiKey kosong — menggunakan data sample lokal');
       return [
@@ -48,7 +46,6 @@ class _ApiDemoPageState extends State<ApiDemoPage> {
       ];
     }
 
-    // PRIORITAS 3: Fetch dari API jika sudah ada API key
     final String urlEndpoint = "${Env.baseUrl}/users?page=1";
 
     try {
@@ -155,7 +152,6 @@ class _ApiDemoPageState extends State<ApiDemoPage> {
           }
 
           if (snapshot.hasError) {
-            // Jika error karena missing API key, tambahkan petunjuk singkat agar user tahu cara menangani
             final String err = snapshot.error.toString();
             final bool missingKey = err.toLowerCase().contains('missing_api_key') || err.toLowerCase().contains('missing/invalid key') || err.contains('401');
 
@@ -180,8 +176,6 @@ class _ApiDemoPageState extends State<ApiDemoPage> {
                       const SizedBox(height: 8),
                       ElevatedButton(
                         onPressed: () {
-                          // Bantu developer: buka file env.dart di editor (kami tidak bisa membuka editor dari runtime),
-                          // tapi kita berikan instruksi singkat. User harus mengedit file dan memasukkan kunci.
                           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Buka lib/config/env.dart lalu isi Env.apiKey dengan nilai key Anda.')));
                         },
                         child: const Text('Cara isi API key'),
@@ -197,7 +191,6 @@ class _ApiDemoPageState extends State<ApiDemoPage> {
           if (snapshot.hasData) {
             final listUser = snapshot.data!;
 
-            // VERSI TERBARU: Bebas dari jeratan gembok const global pengganggu!
             return ListView.builder(
               padding: const EdgeInsets.all(16),
               itemCount: listUser.length,

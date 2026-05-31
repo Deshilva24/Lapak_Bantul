@@ -14,16 +14,15 @@ class MainNavigation extends StatefulWidget {
 }
 
 class _MainNavigationState extends State<MainNavigation> {
-  int _currentIndex = 0; // Mengontrol menu bawah mana yang sedang aktif
+  int _currentIndex = 0; 
 
-  // Menggunakan Getter agar parameter dinamis dari file asli kamu bisa masuk tanpa error const
     List<Widget> get _pages => [
-    const HomePage(),             // Index 0: Beranda (home_page.dart)
-    const PbbPage(),              // Index 1: PBB langsung ke Input NOP (pbb1.dart)
-    const DetailSpptPage(statusBayar: "Sudah Lunas", tahun: "2026"), // Index 2: Kendaraan langsung ke Detail SPPT (detail.dart)
-    const DummyPage(title: "Usaha"),         // Index 3: Usaha (Kosong Dulu)
-    const LayananKelilingPage(),             // Index 4: Keliling (layanan_keliling.dart)
-    const ApiDemoPage(),                      // Index 5: API Demo (real page)
+    const HomePage(),             
+    const PbbPage(),              
+    const DetailSpptPage(statusBayar: "Sudah Lunas", tahun: "2026"), 
+    const DummyPage(title: "Usaha"),         
+    const LayananKelilingPage(),             
+    const ApiDemoPage(),                     
   ];
 
   @override
@@ -31,20 +30,19 @@ class _MainNavigationState extends State<MainNavigation> {
     const Color mainBlue = Color(0xFF0A3D6D);
 
     return Scaffold(
-      // Tubuh halaman di tengah yang akan berubah-ubah sesuai menu yang diklik
+      
       body: _pages[_currentIndex], 
       
-      // Bottom Navigation Bar yang nempel terus di bawah beranda dan halaman lainnya
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: (index) {
           setState(() {
-            _currentIndex = index; // Berpindah halaman saat menu bawah diklik
+            _currentIndex = index; 
           });
         },
-        type: BottomNavigationBarType.fixed, // Menampilkan ke-6 menu secara sejajar rapi
-        selectedItemColor: mainBlue,         // Warna biru saat menu aktif
-        unselectedItemColor: Colors.grey,    // Warna abu-abu saat menu tidak aktif
+        type: BottomNavigationBarType.fixed, 
+        selectedItemColor: mainBlue,         
+        unselectedItemColor: Colors.grey,  
         selectedFontSize: 11,
         unselectedFontSize: 11,
         items: const [

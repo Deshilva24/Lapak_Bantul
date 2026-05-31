@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'pbb2.dart'; // Import Page 5 agar bisa berpindah halaman
+import 'pbb2.dart'; 
 
 class PbbPage extends StatefulWidget {
   const PbbPage({super.key});

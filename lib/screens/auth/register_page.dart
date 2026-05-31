@@ -30,13 +30,9 @@ class _RegisterPageState extends State<RegisterPage> {
     super.dispose();
   }
 
-  // =========================================================================
-  // PERBAIKAN ALUR NAVIGASI: KEMBALI KE HALAMAN LOGIN SETELAH BERHASIL
-  // =========================================================================
   void _prosesDaftar() {
-    // Memicu pengecekan seluruh validator di TextFormField secara otomatis
     if (_formKey.currentState!.validate()) {
-      // Jika semua form valid, tampilkan sukses
+      
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Row(
@@ -51,7 +47,6 @@ class _RegisterPageState extends State<RegisterPage> {
         ),
       );
 
-      // Kembalikan data pendaftaran ke halaman login sebagai syarat wajib login
       Navigator.pop(context, {
         'email': _inputEmail.text.trim(),
         'password': _inputPass.text.trim(),
@@ -74,7 +69,7 @@ class _RegisterPageState extends State<RegisterPage> {
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 24),
         child: Form(
-          key: _formKey, // Membungkus inputan dengan widget Form
+          key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -166,7 +161,7 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  // Widget pembantu (Helper) yang sudah di-upgrade ke TextFormField + Validator
+ 
   Widget _buildField(
     String label, 
     IconData icon, 
@@ -211,7 +206,7 @@ class _RegisterPageState extends State<RegisterPage> {
         TextFormField(
           controller: ctrl,
           obscureText: hide,
-          validator: validator, // Menyuntikkan fungsi validasi
+          validator: validator, 
           decoration: InputDecoration(
             prefixIcon: const Icon(Icons.lock_outline, color: Color(0xFF003566)),
             suffixIcon: IconButton(
